@@ -8,6 +8,7 @@ export async function bodyParser (body) {
   try {
     serverConfig = await getServerConfig(body.type);
 
+    obj.sender = body.sender
     obj.receiver = emailChecker(body.receiver);
     obj.text = body.text;
     obj.subject = body.subject;

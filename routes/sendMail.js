@@ -1,44 +1,27 @@
+import fs from 'node:fs/promises';
 import { Router } from 'express';
-import multer from 'multer';
-import nodemailer from 'nodemailer';
 import { bodyParser } from '../parsers/bodyParser.js';
 import { myUpload } from '../controllers/upload.js';
-import fs from 'node:fs/promises'
+import { createTransporter } from '../controllers/transporter.js';
+import { sendMail } from '../controllers/mail.js';
 
 export const sendMailRouter = Router();
 
 sendMailRouter.post("/", myUpload, async (req, res) => {
   const settings = await bodyParser(req.body);
-  console.log(req.file)
+  console.log(settings)
   if (settings.error) {
     res.json(settings);
     return;
   }
 
-  const transporter = nodemailer.createTransport({
-    host: settings.config.host,
-    port: settings.config.port,
-    secure: settings.config.secure,
-    auth: {
-      user: settings.auth.user,
-      pass: settings.auth.pass,
-    },
-  });
+  const transporter = await createTransporter(settings);
 
-  const info = await transporter.sendMail({
-    from: `<${settings.username}>`,
-    to: settings.receiver,
-    subject: settings.subject,
-    text: settings.text,
-    attachments: {
-      filename: req.file.filename,
-      path: req.file.path
-    }
-  });
+  const responseInfo = await sendMail(transporter, req.file, settings);
 
-  console.log("Message sent: %s", info.messageId);
+  console.log("Message sent: %s", responseInfo.messageId);
 
-  if (info.messageId) {
+  if (responseInfo.messageId) {
     res.status(200).json({
       "message": "Email enviado!"
     })
