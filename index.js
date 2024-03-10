@@ -16,9 +16,6 @@ app.set('views', __dirname + '/static');
 app.engine('html', engines.mustache);
 app.set('view engine', 'html');
 app.use(express.static(path.join(__dirname, '/static')));
-// app.set('views', path.join(__dirname, 'src/static'))
-// app.use(express.static(path.join(__dirname, 'src/static')))
-// app.use(express.static(path.join(__dirname, 'src/static/css')))
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 

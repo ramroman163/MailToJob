@@ -8,6 +8,9 @@ import { sendMail } from '../controllers/mail.js';
 export const sendMailRouter = Router();
 
 sendMailRouter.post("/", myUpload, async (req, res) => {
+  console.log("Se recibió una request")
+  console.log(req.body)
+
   const settings = await bodyParser(req.body);
   console.log(settings)
   if (settings.error) {
@@ -26,13 +29,15 @@ sendMailRouter.post("/", myUpload, async (req, res) => {
       "message": "Email enviado!"
     })
 
-    fs.rm(req.file.path)
-      .then(() => {
-        console.log("file deleted")
-      })
-      .catch((e) => {
-        console.log(e)
-      })
+    if (req.file) {
+      fs.rm(req.file.path)
+        .then(() => {
+          console.log("file deleted")
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+    }
   } else {
     res.status(500);
   }

@@ -4,7 +4,11 @@ export async function sendMail (transporter, file, settings) {
     to: settings.receiver,
     subject: settings.subject,
     text: settings.text,
-    attachments: {
+
+  }
+
+  if (file) {
+    bodyMail.attachments = {
       filename: file.filename,
       path: file.path
     }

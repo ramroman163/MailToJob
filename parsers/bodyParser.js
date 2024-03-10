@@ -1,5 +1,6 @@
 import { config } from "../config/emailConfig.js";
 import { emailChecker } from "./checkers.js";
+import { configError } from "./errors.js";
 
 export async function bodyParser (body) {
   const obj = {};
@@ -40,6 +41,6 @@ async function getServerConfig (type) {
     return serverConfig
 
   } else {
-    throw error;
+    throw "No se encontró la configuración";
   }
 }
