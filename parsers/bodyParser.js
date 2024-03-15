@@ -14,7 +14,6 @@ export async function bodyParser (body) {
     obj.text = body.text;
     obj.subject = body.subject;
 
-    console.log(obj);
     obj.auth = {
       user: emailChecker(body.email),
       pass: body.password
@@ -24,23 +23,19 @@ export async function bodyParser (body) {
 
     return obj;
 
-  } catch (error) {
-    console.log(error)
-    return {
-      error: true,
-      message: "Body parser error"
-    }
+  } catch (e) {
+    throw configError('"[ Body parser error ]" + " " ' + e.message);
   }
 }
 
 async function getServerConfig (type) {
   const serverConfig = config.find(configObj => configObj.type === type)
-  console.log(serverConfig)
+  //console.log(serverConfig)
 
   if (serverConfig) {
     return serverConfig
 
   } else {
-    throw "No se encontró la configuración";
+    throw configError("No se encontró la configuración");
   }
 }

@@ -1,4 +1,7 @@
-export function configError (mensaje) {
-  this.mensaje = mensaje;
-  this.nombre = "ExceptionConfig";
+export class configError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = this.constructor.name;
+    this.message = message;
+  }
 }

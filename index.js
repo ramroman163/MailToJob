@@ -3,6 +3,7 @@ import path from 'node:path';
 import { sendMailRouter } from './routes/sendMail.js';
 import engines from 'consolidate'
 import { fileURLToPath } from 'url';
+import pc from 'picocolors'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,5 +24,5 @@ app.get("/", (req, res) => { res.sendFile(process.cwd() + "/static/index.html") 
 app.use("/mail", sendMailRouter)
 
 app.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}/`)
+  console.log(pc.bgGreen(`\nServidor escuchando en http://localhost:${PORT}/ \n`))
 })

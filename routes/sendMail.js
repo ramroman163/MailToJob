@@ -4,27 +4,43 @@ import { bodyParser } from '../parsers/bodyParser.js';
 import { myUpload } from '../controllers/upload.js';
 import { createTransporter } from '../controllers/transporter.js';
 import { sendMail } from '../controllers/mail.js';
+import pc from 'picocolors'
 
 export const sendMailRouter = Router();
 
 sendMailRouter.post("/", myUpload, async (req, res) => {
-  console.log("Se recibió una request")
-  console.log(req.body)
+  console.log(pc.blue("Se recibió un mail"))
 
-  const settings = await bodyParser(req.body);
-  console.log(settings)
-  if (settings.error) {
-    res.json(settings);
-    return;
+  let settings = null;
+  try {
+    settings = await bodyParser(req.body);
+  } catch (error) {
+    console.log(pc.red("Error en body parser"))
+    return res.status(500).json({ "error": error.message })
   }
 
-  const transporter = await createTransporter(settings);
+  let transporter = null;
+  try {
+    transporter = await createTransporter(settings);
+  } catch (error) {
+    console.log(pc.red("Error en createTransporter"))
+    console.log(pc.red(error))
+    return res.status(500).json({ "error": error.message })
+  }
 
-  const responseInfo = await sendMail(transporter, req.file, settings);
-
-  console.log("Message sent: %s", responseInfo.messageId);
+  let responseInfo = null;
+  try {
+    responseInfo = await sendMail(transporter, req.file, settings);
+    console.log("Message sent: %s", responseInfo.messageId);
+  } catch (error) {
+    console.log(pc.red("Error en enviar mail"))
+    console.log(pc.red(error))
+    return res.status(500).json({ "error": error.message })
+  }
 
   if (responseInfo.messageId) {
+    console.log(pc.green("Email enviado!"))
+
     res.status(200).json({
       "message": "Email enviado!"
     })
@@ -32,13 +48,14 @@ sendMailRouter.post("/", myUpload, async (req, res) => {
     if (req.file) {
       fs.rm(req.file.path)
         .then(() => {
-          console.log("file deleted")
+          console.log("Archivo eliminado")
         })
         .catch((e) => {
-          console.log(e)
+          console.log(pc.red(e))
         })
     }
   } else {
-    res.status(500);
+    console.log(pc.red("Error en el final"))
+    return res.status(500).json({ "message": "No se realizó el envío" });
   }
 });

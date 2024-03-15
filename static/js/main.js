@@ -35,10 +35,21 @@ async function sendMail (options) {
   fetch('http://localhost:3000/mail/', options)
     .then(response => response.json())
     .then(response => {
-      console.log(response)
       animateSendButton(false)
+      if (response.message) {
+        correctToast();
+      } else if (response.error) {
+        console.log(response.error);
+        incorrectToast();
+      }
+      else {
+        incorrectToast();
+      }
     })
-    .catch(error => console.error(error))
+    .catch(error => {
+      incorrectToast();
+      console.error(error)
+    })
 }
 
 async function setBody () {
@@ -67,4 +78,38 @@ async function setBody () {
   }
 
   return formData;
+}
+
+async function correctToast () {
+  Toastify({
+    text: "Email enviado!",
+    duration: 1500,
+    destination: "https://github.com/apvarun/toastify-js",
+    newWindow: true,
+    close: false,
+    gravity: "top", // `top` or `bottom`
+    position: "right", // `left`, `center` or `right`
+    stopOnFocus: true, // Prevents dismissing of toast on hover
+    style: {
+      background: "#198754",
+    },
+    onClick: function () { } // Callback after click
+  }).showToast();
+}
+
+async function incorrectToast () {
+  Toastify({
+    text: "Error al enviar!",
+    duration: 1500,
+    destination: "https://github.com/apvarun/toastify-js",
+    newWindow: true,
+    close: false,
+    gravity: "top", // `top` or `bottom`
+    position: "right", // `left`, `center` or `right`
+    stopOnFocus: true, // Prevents dismissing of toast on hover
+    style: {
+      background: "#2c0b0e",
+    },
+    onClick: function () { } // Callback after click
+  }).showToast();
 }
